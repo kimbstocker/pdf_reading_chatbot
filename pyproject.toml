@@ -1,0 +1,13 @@
+[project]
+name = "pdfsreadingagent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "chromadb>=0.5.5",
+    "langchain-community>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langchain>=0.3.0",
+    "unstructured[pdf]>=0.15.12",
+]
