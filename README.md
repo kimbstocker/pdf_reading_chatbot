@@ -10,12 +10,7 @@ brew install uv
 # Install dependencies:
 
 ```
-uv add streamlit
-uv add langchain_community
-uv add langchain
-uv add langchain_openai
-uv add chromadb
-uv add unstructured[pdf]
+uv sync
 ```
 
 # Create a local .env file
