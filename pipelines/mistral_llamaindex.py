@@ -28,7 +28,12 @@ def mistralai_llamaindex_pipeline(query: str):
 
     # Create query engine from the vector store index
     query_engine = index.as_query_engine(similarity_top_k=5)
-    response = query_engine.query(query)
+    
+    try:
+        response = query_engine.query(query)
+    except Exception as e:
+        print(f"Error: {e}")
+        response = "There is a problem with generating answers, please reload and retry"
     
     return response
 

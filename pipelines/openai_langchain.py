@@ -1,15 +1,13 @@
 import os
 from dotenv import load_dotenv
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain.prompts import ChatPromptTemplate
-from langchain_community.document_loaders import UnstructuredPDFLoader
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from model import prompt_templates
-from rag_pipelines.utils.get_split_docs import get_split_documents
+from pipelines.utils.get_split_docs import get_split_documents
 
 def openai_langchain_pipeline(query: str):
-
+    
     load_dotenv()
     OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
     DOC_PATH = os.environ["DATASET_PATH"]
@@ -29,11 +27,10 @@ def openai_langchain_pipeline(query: str):
     # ----- Retrieval and Generation -----
 
     # retrieve context - top 5 most relevant (closests) chunks to the query vector 
-    # (by default Langchain is using cosine distance metric)
-    docs_chroma = db_chroma.similarity_search_with_score(query, k=5)
+    top_chunks_context = db_chroma.similarity_search_with_score(query, k=5)
 
     # generate an answer based on given user query and retrieved context information
-    context_text = "\n\n".join([doc.page_content for doc, _score in docs_chroma])
+    context_text = "\n\n".join([doc.page_content for doc, _score in top_chunks_context])
 
     # load retrieved context and user query in the prompt template and format it
     prompt_template = ChatPromptTemplate.from_template(prompt_templates.PROMPT_TEMPLATE)
@@ -41,6 +38,11 @@ def openai_langchain_pipeline(query: str):
 
     # call LLM model to generate the answer based on the given formatted prompt
     model = ChatOpenAI(model="gpt-3.5-turbo")
-    response = model.invoke(prompt)
+    
+    try:
+        response = model.invoke(prompt).content
+    except Exception as e:
+        print(f"Error: {e}")
+        response = "There is a problem with generating answers, please reload and retry"
 
     return response
