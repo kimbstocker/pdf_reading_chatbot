@@ -45,4 +45,4 @@ def openai_langchain_pipeline(query: str):
         print(f"Error: {e}")
         response = "There is a problem with generating answers, please reload and retry"
 
-    return response
+    return {"answer": response, "contexts": context_text}

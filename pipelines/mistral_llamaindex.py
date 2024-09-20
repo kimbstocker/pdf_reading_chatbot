@@ -5,6 +5,7 @@ from llama_index.llms.mistralai import MistralAI
 from llama_index.embeddings.mistralai import MistralAIEmbedding
 
 def mistralai_llamaindex_pipeline(query: str):
+
     load_dotenv()
     MISTRALAI_API_KEY = os.environ["MISTRALAI_API_KEY"]
     DOC_PATH = os.environ["DATASET_PATH"]
@@ -23,6 +24,12 @@ def mistralai_llamaindex_pipeline(query: str):
 
     # Create in-memory vector store index
     index = VectorStoreIndex.from_documents(loaded_documents)
+    
+    # ----- create context_text for performance evalutation purposes only -----
+    
+    retriever = index.as_retriever()
+    nodes_with_score = retriever.retrieve(query)
+    context_text = "\n\n".join([n.text for n in nodes_with_score])
 
     # ----- Retrieval and Generation -----
 
@@ -34,7 +41,7 @@ def mistralai_llamaindex_pipeline(query: str):
     except Exception as e:
         print(f"Error: {e}")
         response = "There is a problem with generating answers, please reload and retry"
-    
-    return response
+
+    return {"answer": response, "contexts": context_text}
 
 # NOTE: https://docs.llamaindex.ai/en/stable/examples/prompts/prompt_optimization/
