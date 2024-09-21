@@ -1,14 +1,11 @@
 import pandas as pd
+from pipelines.utils.perf_evals_dataset import inputs
 
 
 def createTableDataframe(data): 
 
     # Flatten the data into a list of dictionaries
-    questions = [
-        "What is the maximum liability cover for third-party property damage under Allianz?",
-        "What types of motor insurance cover are offered by Allianz?",
-        "What is the cooling-off period for Allianz's personal motor insurance policy?"
-    ]
+    questions = inputs
     
     openai_hallucination = [list(item.values())[0] for item in data["Openai"]["answer_hallucination_score"]]
     openai_helpfulness = [list(item.values())[0] for item in data["Openai"]["answer_helpfulness_score"]]

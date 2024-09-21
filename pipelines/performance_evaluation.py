@@ -3,23 +3,12 @@ from langsmith.evaluation import evaluate
 import uuid
 from pipelines.utils.performance_evaluators import answer_accuracy_evaluator, answer_helpfulness_evaluator, answer_hallucination_evaluator
 from pipelines.utils.extract_scores import extract_scores
+from pipelines.utils.perf_evals_dataset import inputs, outputs
 
 def langsmith_evaluation_pipeline(rag_pipeline):
     results = {}
-    # QA
-    inputs = [
-        "What types of motor insurance cover are offered by Allianz?",
-        "What is the maximum liability cover for third-party property damage under Allianz?",
-        "What is the cooling-off period for Allianz's personal motor insurance policy?",
-    ]
 
-    outputs = [
-        "Allianz offers three types of cover: Comprehensive Insurance, Third Party Property Damage Insurance, and Third Party Fire and Theft Insurance (only available to existing customers).",
-        "The maximum legal liability cover for third-party property damage is $30,000,000.",
-        "The cooling-off period is 21 days from the date the policy is issued or renewed, provided no claim has been made.",
-    ]
-
-    # Create dataset & examples
+    # Create dataset & examples data in Langchain client db
     client = Client()
     uid = str(uuid.uuid4())
 

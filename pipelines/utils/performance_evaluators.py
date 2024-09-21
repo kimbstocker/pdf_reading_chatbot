@@ -32,8 +32,6 @@ def answer_accuracy_evaluator(run, example) -> dict:
 
     score = score["Score"]
 
-    print(f"score: {score}")
-
     return {"key": "answer_accuracy_score", "score": score}
 
 

@@ -80,8 +80,8 @@ def main():
       
       st.session_state.messages.append({"role": "user", "content": prompt})
           
-      openai_answer = openai_langchain_pipeline(prompt)
-      mistralai_answer = mistralai_llamaindex_pipeline(prompt)
+      openai_answer = openai_langchain_pipeline(prompt)["answer"]
+      mistralai_answer = mistralai_llamaindex_pipeline(prompt)["answer"]
 
       print(f"openai_answer: {openai_answer}")
       print(f"mistralai_answer: {mistralai_answer}")
