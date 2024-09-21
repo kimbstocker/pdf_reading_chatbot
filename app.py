@@ -1,5 +1,5 @@
 import os
-from pipelines.openai_langchain import openai_langchain_pipeline, createVectorstoreDatabase
+from pipelines.openai_langchain import openai_langchain_pipeline
 from pipelines.mistral_llamaindex import mistralai_llamaindex_pipeline
 from pipelines.performance_evaluation import langsmith_evaluation_pipeline
 import streamlit as st
