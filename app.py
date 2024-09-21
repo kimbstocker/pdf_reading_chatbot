@@ -90,6 +90,17 @@ def main():
       print(f"openai_answer: {openai_answer}")
       print(f"mistralai_answer: {mistralai_answer}")
       
+      st.session_state.messages.append(
+         {
+            "role": "assistant",
+            "content": 
+               {  
+                  "openai_response": openai_answer,
+                  "mistralai_response": mistralai_answer,
+               } 
+         }
+      )
+            
       # initiate performance results
       if not st.session_state.comparison_results:
       
@@ -104,17 +115,6 @@ def main():
                
          st.session_state.comparison_results = comparison_results 
     
-      st.session_state.messages.append(
-         {
-            "role": "assistant",
-            "content": 
-               {  
-                  "openai_response": openai_answer,
-                  "mistralai_response": mistralai_answer,
-               } 
-         }
-      )
-      
    st.chat_input("Ask me anything about the PDFs...", on_submit=chat_actions, key="prompt")
 
     
