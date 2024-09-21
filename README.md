@@ -7,6 +7,8 @@ Install `python` and `uv` for "Extremely fast Python package installer and resol
 ```
 brew install python
 brew install uv
+brew install poppler
+
 ```
 
 ## Install dependencies
@@ -33,7 +35,7 @@ OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 LANGCHAIN_API_KEY="YOUR_LANGCHAIN_API_KEY"
 MISTRALAI_API_KEY="YOUR_MISTRALAI_API_KEY"
 DATASET_PATH="/Users/{YOUR_USERNAME}/{PROJECT_DIR}/model/data"
-DATASTORE_DIR="/Users/{YOUR_USERNAME}/{PROJECT_DIR}/model/PersistentDB"
+DATASTORE_DIR="/Users/{YOUR_USERNAME}/{PROJECT_DIR}/PersistentDB"
 LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
 LANGCHAIN_TRACING_V2="true"
 ```
@@ -47,9 +49,9 @@ LANGCHAIN_TRACING_V2="true"
 uv run streamlit run app.py --server.port=8510
 ```
 
-A browser window should open with the app.
+A browser window should open with the app. Ask a question about NRMA and ANZ insurance policy. Summary table will show on top of the page
 
-It already has the example PDFs loaded, but you can try uploading your own PDFs and ask questions about them.
+<!-- It already has the example PDFs loaded, but you can try uploading your own PDFs and ask questions about them. -->
 
 # App images
 

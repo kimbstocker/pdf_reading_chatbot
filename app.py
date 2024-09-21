@@ -1,5 +1,5 @@
 import os
-from pipelines.openai_langchain import openai_langchain_pipeline
+from pipelines.openai_langchain import openai_langchain_pipeline, createVectorstoreDatabase
 from pipelines.mistral_llamaindex import mistralai_llamaindex_pipeline
 from pipelines.performance_evaluation import langsmith_evaluation_pipeline
 import streamlit as st
@@ -17,17 +17,8 @@ def main():
    if "initialized" not in st.session_state:
       print("Initializing session state...")
       
-      comparison_results = {}
       st.session_state.messages = []
-      
-      # Run the evaluation
-      openai_evaluation_results = langsmith_evaluation_pipeline(openai_langchain_pipeline)
-      mistralai_evaluation_results = langsmith_evaluation_pipeline(mistralai_llamaindex_pipeline)
-         
-      comparison_results["Openai"] = openai_evaluation_results
-      comparison_results["Mistralai"] = mistralai_evaluation_results
-            
-      st.session_state.comparison_results = comparison_results 
+      st.session_state.comparison_results = {}      
       st.session_state.initialized = True   
 
 
@@ -54,6 +45,19 @@ def main():
    for uploaded_file in uploaded_files:
       with open(os.path.join(os.environ['DATASET_PATH'], uploaded_file.name), "wb") as f:
          f.write(uploaded_file.getbuffer())
+      openai_docs_summary = openai_langchain_pipeline("Please show a summary of this document, make it concise and no longer than 500 words")
+      mistralai_docs_summary = mistralai_llamaindex_pipeline("Please show a summary of this document, make it concise and no longer than 500 words")
+      
+      st.session_state.messages.append(
+         {
+            "role": "assistant",
+            "content": 
+               {  
+                  "openai_response": openai_docs_summary,
+                  "mistralai_response": mistralai_docs_summary,
+               } 
+         }
+      )
    
    # render messages in session state
    for message in st.session_state.messages:
@@ -82,9 +86,23 @@ def main():
           
       openai_answer = openai_langchain_pipeline(prompt)["answer"]
       mistralai_answer = mistralai_llamaindex_pipeline(prompt)["answer"]
-
+      
       print(f"openai_answer: {openai_answer}")
       print(f"mistralai_answer: {mistralai_answer}")
+      
+      # initiate performance results
+      if not st.session_state.comparison_results:
+      
+         # Run the evaluation
+         openai_evaluation_results = langsmith_evaluation_pipeline(openai_langchain_pipeline)
+         mistralai_evaluation_results = langsmith_evaluation_pipeline(mistralai_llamaindex_pipeline)
+         
+         comparison_results = {}
+
+         comparison_results["Openai"] = openai_evaluation_results
+         comparison_results["Mistralai"] = mistralai_evaluation_results
+               
+         st.session_state.comparison_results = comparison_results 
     
       st.session_state.messages.append(
          {
