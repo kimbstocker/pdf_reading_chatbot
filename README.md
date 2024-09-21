@@ -52,3 +52,7 @@ add .env to
 ```
 uv run streamlit run app.py --server.port=8510
 ```
+
+# App images
+
+![a table and sample prompt](view/images/image.png)
