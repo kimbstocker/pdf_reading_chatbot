@@ -1,5 +1,5 @@
-def extract_scores(results, finalResults):
-    for result in results:
+def extract_scores(eval_results, finalResults):
+    for result in eval_results:
 
         question = result["example"].inputs["question"]
         evaluators_results = result["evaluation_results"]["results"]

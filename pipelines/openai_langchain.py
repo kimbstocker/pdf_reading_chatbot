@@ -6,23 +6,27 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from model import prompt_templates
 from pipelines.utils.get_split_docs import get_split_documents
 
-def openai_langchain_pipeline(query: str):
+def openai_langchain_pipeline(query: str, uploaded_file_name=""):
     
     load_dotenv()
     OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
     DOC_PATH = os.environ["DATASET_PATH"]
-    CHROMA_PATH = os.environ["DATASTORE_DIR"] 
+    # CHROMA_PATH = os.environ["DATASTORE_DIR"] 
 
     # ----- Indexing Data -----
 
     # loading pdf docs and split them into smaller chunks i.e. chunk_size=1000 chunk_overlap=50
-    chunks = get_split_documents(DOC_PATH)
+    chunks = get_split_documents(DOC_PATH, uploaded_file_name)
 
     # Embedding using OpenAI Embedding model
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
 
-    # embed the chunks as vectors and load them into the database
-    db_chroma = Chroma.from_documents(chunks, embeddings, persist_directory=CHROMA_PATH)
+    # embed the chunks as vectors and load them into the database. Using in-memory datastore 
+    # TODO: Disable the use of persistence data storage as it hallucinates btw contexts more than 1 pdf uploaded
+    # Find a better way to manage data source. Maybe add meta data when upload pdf?
+    # db_chroma = Chroma.from_documents(chunks, embeddings, persist_directory=CHROMA_PATH)
+
+    db_chroma = Chroma.from_documents(chunks, embeddings)
 
     # ----- Retrieval and Generation -----
 

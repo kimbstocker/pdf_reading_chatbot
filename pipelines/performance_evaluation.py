@@ -32,7 +32,7 @@ def langsmith_evaluation_pipeline(rag_pipeline):
         response = rag_pipeline(example["question"])
         return {"answer": response["answer"], "contexts": response["contexts"]}
 
-    
+    #TODO: error handling
     answer_experiment_results = evaluate(
         predict_rag_answer,
         data=dataset_name,

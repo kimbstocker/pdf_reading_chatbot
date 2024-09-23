@@ -1,12 +1,15 @@
-import os
+import streamlit as st
+from dotenv import load_dotenv
 from pipelines.openai_langchain import openai_langchain_pipeline
 from pipelines.mistral_llamaindex import mistralai_llamaindex_pipeline
-from pipelines.performance_evaluation import langsmith_evaluation_pipeline
-import streamlit as st
 from view.styles.st_custom_styles import custom_css
 from view.utils.comparison_table import createTableDataframe
+from view.utils.render_bot_messages import render_chatbot_messages
+from pipelines.utils.get_uploaded_doc_summary import get_uploaded_doc_summary
+from pipelines.utils.get_perf_comparison_results import get_performance_comparison_results
 
 def main():
+   load_dotenv()
    
    st.set_page_config(page_title="PDF Reading AI Chatbot 🤖", layout="wide")
 
@@ -18,9 +21,10 @@ def main():
       print("Initializing session state...")
       
       st.session_state.messages = []
-      st.session_state.comparison_results = {}      
+      st.session_state.chat_actions_triggered = False
+      st.session_state.comparison_results = {}    
+      st.session_state.uploaded_file_names = []
       st.session_state.initialized = True   
-
 
    comparison_result = st.empty()
    
@@ -28,58 +32,32 @@ def main():
       with comparison_result.container():
          st.subheader(f"Performance comparison")
          st.markdown('The below comparison results are derived from using Langsmith')
-         
-         print(f"result--: {st.session_state.comparison_results}")  
-
          dataframe = createTableDataframe(st.session_state.comparison_results)
          st.table(dataframe)
+         
+         
+   def generate_docs_summary():
+      # reset below variables to generate new summary for the newly uploaded docs
+      st.session_state.chat_actions_triggered = False
           
    # handle upload files
    uploaded_files = st.file_uploader(
       "Choose one or more PDF file(s)",
       accept_multiple_files=True,
-      type=['pdf']
+      type=['pdf'],
+      on_change=generate_docs_summary
    )
    
-   # upload/write file in the data folder
-   for uploaded_file in uploaded_files:
-      with open(os.path.join(os.environ['DATASET_PATH'], uploaded_file.name), "wb") as f:
-         f.write(uploaded_file.getbuffer())
-      openai_docs_summary = openai_langchain_pipeline("Please show a summary of this document, make it concise and no longer than 500 words")
-      mistralai_docs_summary = mistralai_llamaindex_pipeline("Please show a summary of this document, make it concise and no longer than 500 words")
-      
-      st.session_state.messages.append(
-         {
-            "role": "assistant",
-            "content": 
-               {  
-                  "openai_response": openai_docs_summary,
-                  "mistralai_response": mistralai_docs_summary,
-               } 
-         }
-      )
-   
-   # render messages in session state
-   for message in st.session_state.messages:
-      with st.chat_message(message["role"]):
-         if message["role"] == "user":
-            st.markdown(message["content"])
-                        
-         if message["role"] == "assistant":
-            col1, col2 = st.columns([5, 5])
-
-            with col1: 
-                  st.subheader(f"OpenAI and Langchain pipeline")
-                  st.markdown(message["content"]["openai_response"]) 
-
-            with col2: 
-                  st.subheader(f"MistralAI and LlamaIndex pipline")
-                  st.markdown(message["content"]["mistralai_response"]) 
-   
-   # define chat on_submit function to trigger streamlit app rerun and render nrew messages
+   get_uploaded_doc_summary(st, uploaded_files)
+            
+   # render messages in session state         
+   render_chatbot_messages(st)
+     
+   # define chat on_submit function to trigger streamlit app rerun and render new messages
    def chat_actions():
       prompt = st.session_state["prompt"]
-      if not prompt:
+      if not prompt or len(st.session_state.uploaded_file_names) == 0:
+         st.warning('Please upload a file before asking questions', icon="⚠️")
          return
       
       st.session_state.messages.append({"role": "user", "content": prompt})
@@ -97,26 +75,17 @@ def main():
                {  
                   "openai_response": openai_answer,
                   "mistralai_response": mistralai_answer,
+                  "summary": False
                } 
          }
       )
-            
-      # initiate performance results
-      if not st.session_state.comparison_results:
       
-         # Run the evaluation
-         openai_evaluation_results = langsmith_evaluation_pipeline(openai_langchain_pipeline)
-         mistralai_evaluation_results = langsmith_evaluation_pipeline(mistralai_llamaindex_pipeline)
-         
-         comparison_results = {}
-
-         comparison_results["Openai"] = openai_evaluation_results
-         comparison_results["Mistralai"] = mistralai_evaluation_results
-               
-         st.session_state.comparison_results = comparison_results 
+      st.session_state.chat_actions_triggered = True
+      
+      # run evalutation performance tests and add results to session_state
+      get_performance_comparison_results(st)
     
    st.chat_input("Ask me anything about the PDFs...", on_submit=chat_actions, key="prompt")
-
     
 if __name__ == "__main__":
     main()

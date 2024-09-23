@@ -13,6 +13,7 @@ def createTableDataframe(data):
     openai_helpfulness = [list(item.values())[0] for item in data["Openai"]["answer_helpfulness_score"]]
     openai_accuracy = [list(item.values())[0] for item in data["Openai"]["answer_accuracy_score"]]
 
+    # TODO: handle empty result
     # Extract scores for Mistralai
     mistralai_hallucination = [list(item.values())[0] for item in data["Mistralai"]["answer_hallucination_score"]]
     mistralai_helpfulness = [list(item.values())[0] for item in data["Mistralai"]["answer_helpfulness_score"]]
