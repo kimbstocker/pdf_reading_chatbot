@@ -8,8 +8,9 @@ grade_prompt_answer_helpfulness = prompt = hub.pull(
 )
 grade_prompt_hallucinations = prompt = hub.pull("langchain-ai/rag-answer-hallucination")
 
+
 def answer_accuracy_evaluator(run, example) -> dict:
-    
+
     # Get question, ground truth answer, RAG chain answer
     input_question = example.inputs["question"]
     reference = example.outputs["answer"]
@@ -78,4 +79,3 @@ def answer_hallucination_evaluator(run, example) -> dict:
     score = score["Score"]
 
     return {"key": "answer_hallucination_score", "score": score}
-

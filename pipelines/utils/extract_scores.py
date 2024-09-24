@@ -8,8 +8,4 @@ def extract_scores(eval_results, finalResults):
             evaluator = eval_result.key
             score = eval_result.score
 
-            finalResults.setdefault(evaluator, []).append(
-                {
-                    question: score
-                }
-            ) 
+            finalResults.setdefault(evaluator, []).append({question: score})
