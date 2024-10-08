@@ -48,7 +48,7 @@ def mistralai_llamaindex_pipeline(query: str, uploaded_file_name=""):
         print(f"Error: {e}")
         response = "There is a problem with generating answers, please reload and retry"
 
-    return {"answer": response, "contexts": context_text}
+    return {"answer": str(response), "contexts": context_text}
 
 
 # NOTE: https://docs.llamaindex.ai/en/stable/examples/prompts/prompt_optimization/

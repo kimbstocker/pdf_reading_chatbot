@@ -17,7 +17,9 @@ def render_chatbot_messages(st):
                         st.divider()
                         uploaded_file_name = message["content"]["uploaded_file_name"]
                         st.markdown(f"**Summary of {uploaded_file_name}**")
-                    st.markdown(message["content"]["openai_response"])
+                    st.markdown(
+                        message["content"]["openai_response"].replace("$", "\$")
+                    )
 
                 with col2:
                     if message["content"]["summary"]:
@@ -27,4 +29,6 @@ def render_chatbot_messages(st):
                         st.divider()
                         uploaded_file_name = message["content"]["uploaded_file_name"]
                         st.markdown(f"**Summary of {uploaded_file_name}**")
-                    st.markdown(message["content"]["mistralai_response"])
+                    st.markdown(
+                        message["content"]["mistralai_response"].replace("$", "\$")
+                    )
