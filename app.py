@@ -84,7 +84,8 @@ def main():
         st.session_state.chat_actions_triggered = True
 
         # run evalutation performance tests and add results to session_state
-        get_performance_comparison_results(st)
+
+    #   get_performance_comparison_results(st)
 
     st.chat_input(
         "Ask me anything about the PDFs...", on_submit=chat_actions, key="prompt"
